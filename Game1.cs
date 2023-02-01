@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using RogueLiteProject.Objects;
 
 namespace RogueLiteProject
 {
@@ -8,6 +10,10 @@ namespace RogueLiteProject
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        private Texture2D playerTex;
+        private Player player;
+
 
         public Game1()
         {
@@ -18,16 +24,17 @@ namespace RogueLiteProject
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
+            player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2 - playerTex.Width / 2,
+                _graphics.PreferredBackBufferHeight / 2 - playerTex.Height / 2),
+                playerTex, Color.Green, 150f);
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            playerTex = Content.Load<Texture2D>("Art/cube-filled");
         }
 
         protected override void Update(GameTime gameTime)
@@ -35,7 +42,24 @@ namespace RogueLiteProject
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            //Keyboard inputs
+            KeyboardState kstate = Keyboard.GetState();
+            if (kstate.IsKeyDown(Keys.Up))
+            {
+                player.Position.Y -= player.Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if (kstate.IsKeyDown(Keys.Down))
+            {
+                player.Position.Y += player.Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if (kstate.IsKeyDown(Keys.Right))
+            {
+                player.Position.X += player.Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if (kstate.IsKeyDown(Keys.Left))
+            {
+                player.Position.X -= player.Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
 
             base.Update(gameTime);
         }
@@ -44,7 +68,9 @@ namespace RogueLiteProject
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(player.Texture, player.Position, player.Color);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
